@@ -2,7 +2,7 @@
 using namespace std;
 struct deq{
     int arr[10000];
-    int back = 10000/2, front = 10000/2 -1;
+    int back = 10000/2 - 1, front = 10000/2;
     void push_back(int x){
         back++;
         arr[back]=x;
@@ -12,7 +12,7 @@ struct deq{
         arr[front]=x;
     }
     void sum(){
-        if (back > front + 1) {
+        if (back >= front ) {
             cout << arr[back] + arr[front] << endl;
             back--;
             front++;
