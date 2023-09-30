@@ -1,63 +1,68 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 struct Node {
-    std::string data;
+    string val;
     Node* next;
-    Node(const std::string& d) : data(d), next(nullptr) {}
+    Node(string x) : val(x), next(nullptr) {}
 };
 
-int main() {
-    int n, k;
-    std::cin >> n >> k;
-    std::cin.ignore();  // Ignore newline after reading n and k
+Node* insert(Node* tail, const string& value) {
+    Node* newNode = new Node(value);
+    if (!tail) {
+        return newNode;
+    }
+    tail->next = newNode;
+    return newNode;
+}
 
+void print(Node* head) {
+    while (head) {
+        cout << head->val << " ";
+        head = head->next;
+    }
+    cout << endl;
+}
+
+Node* cyclic_left(Node* head, int x){
+     if (x == 0 || !head || !head->next) {
+        return head;
+    }
+    Node* cur = head;
+    Node* tail = head;
+    while (tail->next){
+        tail = tail->next;
+    }
+    for(int i = 0;i<x-1;i++){
+        cur = cur->next;
+    }
+    if (!cur->next) {
+        return head;
+    }
+    tail->next = head;  
+    head = cur->next;   
+    cur->next = nullptr;
+    return head;
+}
+
+int main() {
     Node* head = nullptr;
     Node* tail = nullptr;
-
-    // Read the words and create the linked list
-    for (int i = 0; i < n; ++i) {
-        std::string word;
-        std::cin >> word;
-
-        Node* newNode = new Node(word);
+    int N, K; 
+    cin >> N >> K;
+    for (int i = 0; i < N; i++) {
+        string temp;
+        cin >> temp;
         if (!head) {
-            head = tail = newNode;
+            head = insert(tail, temp);
+            tail = head;
         } else {
-            tail->next = newNode;
-            tail = newNode;
+            tail = insert(tail, temp);
         }
     }
-
-    // Move the first n-k nodes to the end
-    if (k < n) {
-        Node* prev = nullptr;
-        Node* curr = head;
-        for (int i = 0; i < n - k; ++i) {
-            prev = curr;
-            curr = curr->next;
-        }
-
-        if (prev) {
-            prev->next = nullptr;
-            tail->next = head;
-            head = curr;
-        }
-    }
-
-    // Print the linked list
-    Node* temp = head;
-    while (temp) {
-        std::cout << temp->data << " ";
-        temp = temp->next;
-    }
-
-    // Cleanup
-    while (head) {
-        Node* toDelete = head;
-        head = head->next;
-        delete toDelete;
-    }
-
+    head = cyclic_left(head, K);
+    print(head);
     return 0;
 }
