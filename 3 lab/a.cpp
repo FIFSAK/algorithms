@@ -6,36 +6,29 @@ int binarySearch(int **array, int x, int low, int high, int row) {
         int mid = low + (high - low) / 2;
 
         if (array[row][mid] == x) {
-            cout << row << " " << mid << endl;
             return mid;
         }
 
-        if (array[row][mid] > x)  // Change this condition for descending order
+        if (array[row][mid] < x)
             low = mid + 1;
         else
             high = mid - 1;
     }
-
     return -1;
 }
+
 int binarySearchDecreasing(int **array, int x, int low, int high, int row) {
     while (low <= high) {
         int mid = low + (high - low) / 2;
 
         if (array[row][mid] == x) {
-            cout << row << " " << mid << endl;
             return mid;
         }
-
-        // Since the array is sorted in decreasing order,
-        // if the current element is smaller than x, 
-        // we move to the left part of the array.
-        if (array[row][mid] < x) 
-            high = mid - 1;
-        else
+        if (array[row][mid] > x) 
             low = mid + 1;
+        else
+            high = mid - 1;
     }
-
     return -1;
 }
 
@@ -57,19 +50,30 @@ int main() {
 
     for (int i = 0; i < size_target; i++) {
         int target = target_arr[i];
+        bool found = false;
         for(int j = 0; j < n; j++) {
-            if(i%2==1) {
-                if(target <= arr[j][m-1]) {
-                    binarySearch(arr, target, 0, m-1, j);
-                }
+            int col;
+            if(j % 2 == 1) {
+                col = binarySearch(arr, target, 0, m-1, j);
             } else {
-                if(target <= arr[j][0]) {
-                    binarySearchDecreasing(arr, target, 0, m-1, j);
-                }
+                col = binarySearchDecreasing(arr, target, 0, m-1, j);
             }
+            if(col != -1) {
+                cout << j << " " << col << endl;
+                found = true;
+                break;
+            }
+        }
+        if(!found) {
+            cout << "-1" << endl;
         }
     }
 
+    // Free the dynamically allocated memory
+    for(int i = 0; i < n; i++) {
+        delete[] arr[i];
+    }
+    delete[] arr;
 
     return 0;
 }
