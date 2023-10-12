@@ -72,6 +72,19 @@ struct BST {
         preOrder(cur->left, res);
         preOrder(cur->right, res);
     }
+    int maxDepth(Node* root){
+        if(root == nullptr){
+            return 0;
+        }
+        int left = 0;
+        int right = 0;
+        left += maxDepth(root->left);
+        right += maxDepth(root->right);
+        return max(left, right)+1;
+    }
+    int maxDepth(){
+        return maxDepth(root);
+    }
 };
 
 int main() {
@@ -81,11 +94,8 @@ int main() {
         int temp; cin >> temp;
         tree.insert(temp);
     }
-    int target; cin>>target;
-    Node* head = tree.find(target);
-    vector<int> v=tree.preOrder(head);
-    for(int i = 0;i<v.size();i++){
-        cout<<v[i]<<" ";
-    }
+    cout<<tree.maxDepth()<<endl;
+    
+    
     return 0;
 }
