@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 using namespace std;
 
 struct Node{
@@ -72,19 +73,29 @@ struct BST {
         preOrder(cur->left, res);
         preOrder(cur->right, res);
     }
-    int maxDepth(Node* root){
-        if(root == nullptr){
+    int maxDepth(Node* cur, int depth, map<int, int>& res) {
+        if (cur == nullptr) {
             return 0;
         }
-        int left = 0;
-        int right = 0;
-        left += maxDepth(root->left);
-        right += maxDepth(root->right);
-        return max(left, right)+1;
+
+        res[depth] += cur->key;
+
+        int left = maxDepth(cur->left, depth + 1, res);
+        int right = maxDepth(cur->right, depth + 1, res);
+
+        return max(left, right) + 1;
     }
-    int maxDepth(){
-        return maxDepth(root);
-    }
+
+    void maxDepth() {
+        map<int, int> res;
+        int depth = maxDepth(root, 1, res);
+
+        cout << depth << endl;
+        for (auto i : res) {
+            cout << i.second << " ";
+        }
+}
+
 };
 
 int main() {
@@ -94,8 +105,8 @@ int main() {
         int temp; cin >> temp;
         tree.insert(temp);
     }
-    cout<<tree.maxDepth()<<endl;
-    
+    tree.maxDepth();
+
     
     return 0;
 }
