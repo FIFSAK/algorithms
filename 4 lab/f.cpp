@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include<algorithm>
 using namespace std;
 
 struct Node{
@@ -50,17 +51,6 @@ struct BST {
 	Node* find(int x) {
 		return find(root, x);
 	}
-
-
-
-
-
-
-
-
-
-    
-
     int travel(Node* cur, int cnt){
         if(cur == nullptr){
             return cnt;
@@ -107,7 +97,22 @@ struct BST {
         for (auto i : res) {
             cout << i.second << " ";
         }
-}
+    }
+    void prefix(Node* cur, vector<int>& v){
+        if(cur == nullptr){
+            return;
+        }
+        prefix(cur->right, v);
+        v.push_back(cur->key + v[v.size()-1]);
+        prefix(cur->left, v);
+    }
+    vector<int> prefix(){
+        vector <int> v;
+        v.push_back(0);
+        prefix(root, v);
+        sort(v.begin(), v.end());
+        return v;
+    }
 
 };
 
@@ -118,8 +123,12 @@ int main() {
         int temp; cin >> temp;
         tree.insert(temp);
     }
-    cout<<tree.travel(tree.root, 0);
-    
+    vector<int> v = tree.prefix();
+    for(int i = 0;i<v.size();i++){
+        if(i!=0){
+            cout<<v[i]<<" ";
+        }
+    }
 
     
     return 0;
