@@ -15,26 +15,28 @@ struct Node{
 struct BST {
     Node* root = nullptr;
 
-    void insert(int x, int y, int pos) {
+    void insert(int x) {
         if (root == nullptr) {
             root = new Node(x);
-            insert(root, y, pos);
             return;
         }
-        insert(root, y, pos);
-
+        insert(root, x);
     }
 
-    void insert(Node* cur, int x, int pos) {
-        if (pos== 0) {
-            cur->left = new Node(x);
-            return;
-        } 
-        else {
-            cur->right = new Node(x);
-            return;
+    void insert(Node* cur, int x) {
+        if (cur->key >= x) {
+            if (cur->left == nullptr) {
+                cur->left = new Node(x);
+                return;
+            }
+            insert(cur->left, x);
+        } else {
+            if (cur->right == nullptr) {
+                cur->right = new Node(x);
+                return;
+            }
+            insert(cur->right, x);
         }
-        
     }
     Node* find(Node *cur, int x) {
 		if (x == cur->key)
@@ -49,19 +51,28 @@ struct BST {
 		return find(root, x);
 	}
 
-    Node* travel(Node* cur, int target){
+
+
+
+
+
+
+
+
+    
+
+    int travel(Node* cur, int cnt){
         if(cur == nullptr){
-            return nullptr;
+            return cnt;
         }
-        if(cur->key == target){
-            return cur;
-        } 
-        Node* leftResult = travel(cur->left, target);
-        if(leftResult != nullptr) {
-            return leftResult;
+        cnt = travel(cur->left, cnt);
+        cnt = travel(cur->right, cnt);
+        if(cur->left != nullptr and cur->right!=nullptr){
+            cnt++;
         }
-        return travel(cur->right, target);
-    }
+        return cnt;
+    }   
+
     vector<int> preOrder(Node* cur){
         vector<int> res;
         preOrder(cur, res);
@@ -80,7 +91,7 @@ struct BST {
             return 0;
         }
 
-        res[depth] += 1;
+        res[depth] += cur->key;
 
         int left = maxDepth(cur->left, depth + 1, res);
         int right = maxDepth(cur->right, depth + 1, res);
@@ -91,13 +102,11 @@ struct BST {
     void maxDepth() {
         map<int, int> res;
         int depth = maxDepth(root, 1, res);
-        int max = 0;
+
+        cout << depth << endl;
         for (auto i : res) {
-            if(i.second>max){
-                max = i.second;
-            }
+            cout << i.second << " ";
         }
-        cout<<max;
 }
 
 };
@@ -105,16 +114,12 @@ struct BST {
 int main() {
     int n; cin >> n;
     BST tree;
-    for (int i = 0; i < n-1; i++) {
-        int x,y,z; cin >>x>>y>>z;
-        if(i==0){
-            tree.insert(x,y,z);
-            continue;
-        }
-        Node* head = tree.travel(tree.root,x);
-        tree.insert(head, y,z);
+    for (int i = 0; i < n; i++) {
+        int temp; cin >> temp;
+        tree.insert(temp);
     }
-    tree.maxDepth();
+    cout<<tree.travel(tree.root, 0);
+    
 
     
     return 0;
