@@ -8,18 +8,14 @@ struct Node {
     Node(int v) : val(v), left(nullptr), right(nullptr) {}
 };
 
-class BST {
-public:
+struct BST {
     Node* root = nullptr;
     
     void insert(int val) {
         root = insert(root, val);
     }
 
-    int diameter() {
-        return diameter(root);
-    }
-private:
+
     Node* insert(Node* node, int val) {
         if (node == nullptr) {
             return new Node(val);
@@ -32,22 +28,36 @@ private:
         return node;
     }
 
-    int diameter(Node* node) {
-        if (node == nullptr) return 0;
-
-        int lHeight = height(node->left);
-        int rHeight = height(node->right);
-
-        int lDiameter = diameter(node->left);
-        int rDiameter = diameter(node->right);
-
-        return max(lHeight + rHeight + 1, max(lDiameter, rDiameter));
+    int getDiameter(Node* root, int &maxdiameter){
+        // базовый случай: дерево пусто
+        if (root == nullptr) {
+            return 0;
+        }
+    
+        // получаем высоты левого и правого поддеревьев
+        int left_height = getDiameter(root->left, maxdiameter);
+        int right_height = getDiameter(root->right, maxdiameter);
+    
+        // // вычисляем диаметр "сквозь" текущий узел
+        int diameter = left_height + right_height + 1;
+    
+        // // обновить максимальный диаметр (обратите внимание, что диаметр "исключая" текущий
+        // // узел в поддереве с корнем в текущем узле уже обновлен
+        // // так как мы делаем обход в обратном порядке)
+        maxdiameter = max(maxdiameter, diameter);
+    
+        // важно вернуть высоту поддерева с корнем в текущем узле
+        return max(left_height, right_height) + 1;
     }
 
-    int height(Node* node) {
-        if (node == nullptr) return 0;
-        return 1 + max(height(node->left), height(node->right));
+    int getDiameter(Node* root){
+        int maxdiameter = 0;
+        getDiameter(root, maxdiameter);
+    
+        return maxdiameter;
     }
+ 
+
 };
 
 int main() {
@@ -61,7 +71,7 @@ int main() {
         tree.insert(x);
     }
 
-    cout << tree.diameter()  << endl; 
+    cout << tree.getDiameter(tree.root)  << endl; 
 
     return 0;
 }
