@@ -1,36 +1,43 @@
-n = input()
+a = [0]
+global n
+n = 0
+
+
+def heapify_up(v):
+    while v != 1 and a[v] > a[v // 2]:
+        a[v], a[v // 2] = a[v // 2], a[v]
+        v = v // 2
+
+
+def push(x):
+    global n;
+    n += 1
+    a.append(x)
+    heapify_up(n)
+
+
+def heapify_down(v):
+    global n
+    mx = v
+    if 2 * v <= n and a[mx] < a[2 * v]: mx = 2 * v
+    if 2 * v + 1 <= n and a[mx] < a[2 * v + 1]: mx = 2 * v + 1
+    if mx == v:
+        return
+    heapify_down(mx)
+
+
+def pop():
+    global n
+    a[1], a[n] = a[n], a[1]
+    n -= 1
+    heapify_down(a, n, 1)
+
+
+def top():
+    return a[1]
+
+
+size = input()
 arr = list(map(int, input().split()))
-pref = []
-arr.sort()
-
-
-def heap(arr):
-    for i in range(len(arr)):
-        l = 2 * i + 1
-        r = 2 * i + 2
-        if l < len(arr) and arr[l] < arr[i]:
-            arr[l], arr[i] = arr[i], arr[l]
-        if r < len(arr) and arr[r] < arr[i]:
-            arr[l], arr[i] = arr[i], arr[l]
-    return arr
-
-
-pref = []
-while len(arr) != 1:
-    arr = heap(arr)
-    if len(arr)>2:
-        if arr[1]>arr[2]:
-            arr[0] = arr[0] + arr[2]
-            del arr[2]
-            continue
-        if arr[2]>arr[1]:
-            arr[0] = arr[0] + arr[1]
-            del arr[1]
-            continue
-    else:
-        arr[0]= arr[0]+ arr[1]
-        del arr[1]
-    pref.append(arr[0])
-    arr = heap(arr)
-
-print(sum(pref))
+arr = [push(i) for i in arr]
+print(a)
