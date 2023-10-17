@@ -29,15 +29,27 @@ def heapify_down(v):
 def pop():
     global n
     a[1], a[n] = a[n], a[1]
+    del a[n]
     n -= 1
-    heapify_down(a, n, 1)
+    heapify_down(1)
 
 
 def top():
     return a[1]
 
 
+def rock():
+    global n
+    while n > 1:
+        a[1] = abs(a[1] - a[2])
+        del a[2]
+        n -= 1
+        heapify_down(1)
+
+
+
 size = input()
 arr = list(map(int, input().split()))
 arr = [push(i) for i in arr]
+rock()
 print(a)
