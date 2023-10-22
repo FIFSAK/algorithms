@@ -1,55 +1,56 @@
-a = [0]
-global n
-n = 0
-
-
-def heapify_up(v):
-    while v != 1 and a[v] > a[v // 2]:
-        a[v], a[v // 2] = a[v // 2], a[v]
-        v = v // 2
-
-
-def push(x):
-    global n;
-    n += 1
+def push(a, x):
     a.append(x)
-    heapify_up(n)
+    heapify_up(a)
+def heapify_up(a):
+    n = len(a)
+    v = n - 1  # Python arrays are 0-indexed
+    while v > 0 and a[v] < a[(v - 1) // 2]:
+        a[v], a[(v - 1) // 2] = a[(v - 1) // 2], a[v]
+        v = (v - 1) // 2
 
+def heapify(a, n, i):
+    smallest = i
+    l = 2 * i + 1
+    r = 2 * i + 2
+    
+    if l < n and a[i] > a[l]:
+        smallest = l
+    if r < n and a[smallest] > a[r]:
+        smallest = r
+    if smallest != i:
+        a[i], a[smallest] = a[smallest], a[i]
+        heapify(a, n, smallest)
 
-def heapify_down(v):
-    global n
-    mx = v
-    if 2 * v <= n and a[mx] < a[2 * v]: mx = 2 * v
-    if 2 * v + 1 <= n and a[mx] < a[2 * v + 1]: mx = 2 * v + 1
-    if mx == v:
-        return
-    heapify_down(mx)
+def build_heap(a):
+    n = len(a)
+    start_idx = n // 2 - 1
+    for i in range(start_idx, -1, -1):
+        heapify(a, n, i)
 
+def getMinimumCost(lengths):
+    build_heap(lengths)
+    cost = 0
+    while len(lengths) > 1:
+        # Extract the two smallest values
+        smallest = pop(lengths)
+        second_smallest = pop(lengths)
+        # Add to cost
+        cost += (smallest + second_smallest)
+        # Push merged value back to the heap
+        push(lengths, smallest + second_smallest)
+    return cost
 
-def pop():
-    global n
-    a[1], a[n] = a[n], a[1]
-    del a[n]
-    n -= 1
-    heapify_down(1)
+def pop(a):
+    n = len(a)
+    top = a[0]
+    a[0] = a[n-1]
+    a.pop()
+    if len(a) > 0:
+        heapify(a, len(a), 0)
+    return top
 
+if __name__ == "__main__":
+    n = int(input())
+    lengths = list(map(int, input().split()))
+    print(getMinimumCost(lengths))
 
-def top():
-    return a[1]
-
-
-def rock():
-    global n
-    while n > 1:
-        a[1] = abs(a[1] - a[2])
-        del a[2]
-        n -= 1
-        heapify_down(1)
-
-
-
-size = input()
-arr = list(map(int, input().split()))
-arr = [push(i) for i in arr]
-rock()
-print(a)
