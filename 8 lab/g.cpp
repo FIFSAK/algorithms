@@ -1,6 +1,5 @@
 #include <iostream>
 #include <algorithm>
-#include <vector>
 
 using namespace std;
 
@@ -15,7 +14,7 @@ int get_hash(string s) {
     return h;
 }
 
-void rk(string s, string t, vector <bool> &a) {
+void rk(string s, string t) {
     int n = s.length(), m = t.length();
     int hs = get_hash(s.substr(0, m));
     int ht = get_hash(t);
@@ -23,30 +22,22 @@ void rk(string s, string t, vector <bool> &a) {
     for (int i = 0; i < m - 1; i++) {
         pm *= p;
     }
+    int cnt = 0;
     for (int i = 0; i + m <= n; i++) {
-        if (hs == ht) {
-            for (int j = i; j < i + m; j++) {
-                a[j] = true;
-            }
-        }
+        if (hs == ht)
+            cnt++;
         if (i + m < n)
             hs = (hs - pm * (s[i] - 'a' + 1)) * p + (s[i + m] - 'a' + 1);
     }
+    cout << cnt << '\n';
 }
 
 int main() {
-    string s; cin >> s;
-    int n; cin >> n;
-    vector <bool> check(s.size(), false);
-    for (int i = 0; i < n; i++) {
-        string sub; cin >> sub;
-        rk(s, sub, check);
+    string s, t; int q; cin >> s >> q;
+    while (q--) {
+        int l, r; cin >> l >> r;
+        t = s.substr(l - 1, r - l + 1);
+        // cout << t << " ";
+        rk(s, t);
     }
-    for (int i = 0; i < s.size(); i++) {
-        if (!check[i]) {
-            cout << "NO";
-            return 0;
-        }
-    }
-    cout << "YES";
 }
