@@ -1,82 +1,57 @@
 #include <iostream>
-#include <cassert>
-#include <algorithm>
 #include <vector>
-#include <cmath>
-#include <map>
+#include <string>
+#include <algorithm>
+
 using namespace std;
 
-void prefix(vector<int> &v, int i, int j, string s){
-    while (i<v.size()){
-        if (s[j] == s[i]){
-            v[i] = j+1;
-            j++;
+int LPS (string hay, int m, string s) {
+    vector <int> lps(m, 0);
+    int len = 0;
+    int i = 1;
+    while (i < m) {
+        if (s[i] == hay[len]) {
+            lps[i] = len + 1;
+            len++;
             i++;
         }
-        else{
-            if (j==0){
-                v[i]=0;
-                i+=1;
-            }
-            else{
-                j = v[j-1];
-            }
+        else if (len != 0) {
+            len = lps[len - 1];
         }
-    }
-}
-
-int kmp(string s, string sub){
-    int i = 0;
-    int j = 0;
-    int cnt = 0;
-    vector<int> v(sub.size());
-    prefix(v, 1, 0, sub);
-    while(i<s.size()){
-        if (s[i]==sub[j]){
+        else {
             i++;
-            j++;
-            if(j == sub.size()){
-                break;
-            }
-        }
-        else{
-            if (j>0){
-                j = v[j-1];
-            }
-            else{
-                i+=1;
-            }
         }
     }
-    return j;
-
+    int res = lps[m - 1];
+    return res;
 }
 
 int main() {
-	string city; cin>>city;
-    int n; cin>>n;
-    vector<string> v(n);
-    for(int i = 0; i < n; i++){
-        cin>>v[i];
-    }
+    string s; cin >> s;
+    s[0] = tolower(s[0]);
+    int n; cin >> n;
     int max = -1;
-    vector<string> max_s;
-    for(auto cur: v){
-        int temp = kmp(city, cur);
-        if (temp>max){
-            max_s.clear();
-            max = temp;
-            max_s.push_back(cur);
+    vector<string> list;
+    for (int i = 0; i < n; i++) {
+        string t; cin >> t;
+        string tmp = t;
+        tmp[0] = tolower(t[0]);
+        int length = LPS(tmp, s.size(), s);
+        if (max < length) {
+            list.clear();
+            max = length;
+            list.push_back(t);
         }
-        else if(temp == max){
-            max_s.push_back(cur);
+        else if (max == length) {
+            list.push_back(t);
         }
     }
-    cout<<max_s.size()<<endl;
-    for(auto cur: max_s){
+    if (max == 0) {
+        cout << 0;
+        return 0;
+    }
+    cout<<list.size()<<endl;
+    for(auto cur: list){
         cout<<cur<<endl;
     }
-    
-
-
 }
