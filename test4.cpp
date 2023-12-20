@@ -1,55 +1,68 @@
 #include <iostream>
 #include <vector>
-#include <queue>
+#include <stack>
+
 using namespace std;
 
+vector<int> topologicalSort(const vector<vector<int>>& adjMatrix) {
+    int vertices = adjMatrix.size();
+    vector<int> inDegree(vertices, 0);
+    stack<int> s;
+
+    // Calculate in-degrees
+    for (int u = 0; u < vertices; ++u) {
+        for (int v = 0; v < vertices; ++v) {
+            if (adjMatrix[u][v] != 0) {
+                inDegree[v]++;
+            }
+        }
+    }
+
+    // Push vertices with in-degree 0 onto the stack
+    for (int u = 0; u < vertices; ++u) {
+        if (inDegree[u] == 0) {
+            s.push(u);
+        }
+    }
+
+    vector<int> result;
+
+    // Topological sorting
+    while (!s.empty()) {
+        int u = s.top();
+        s.pop();
+        result.push_back(u);
+
+        for (int v = 0; v < vertices; ++v) {
+            if (adjMatrix[u][v] != 0) {
+                if (--inDegree[v] == 0) {
+                    s.push(v);
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
 int main() {
-    int m, n;
-    cin >> m >> n;
-    vector<vector<int>> field(m, vector<int>(n));
-    queue<pair<int, int>> q;
-    vector<vector<int>> time(m, vector<int>(n, -1));
+    // Example graph represented by an adjacency matrix
+    vector<vector<int>> adjMatrix = {
+        {0, 0, 1, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 1, 0, 0},
+        {0, 0, 0, 0, 0, 1},
+        {0, 1, 1, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0}
+    };
 
-    for (int i = 0; i < m; ++i) {
-        for (int j = 0; j < n; ++j) {
-            cin >> field[i][j];
-            if (field[i][j] == 2) {
-                q.push({i, j});
-                time[i][j] = 0;
-            }
-        }
+    vector<int> sortedVertices = topologicalSort(adjMatrix);
+
+    cout << "Topological Order: ";
+    for (int vertex : sortedVertices) {
+        cout << vertex << " ";
     }
-
-    int dx[4] = {0, 1, 0, -1};
-    int dy[4] = {1, 0, -1, 0};
-
-    while (!q.empty()) {
-        auto [x, y] = q.front();
-        q.pop();
-        for (int i = 0; i < 4; ++i) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            if (nx >= 0 && nx < m && ny >= 0 && ny < n && field[nx][ny] == 1) {
-                field[nx][ny] = 2;
-                q.push({nx, ny});
-                time[nx][ny] = time[x][y] + 1;
-            }
-        }
-    }
-
-    int maxTime = 0;
-    bool impossible = false;
-    for (int i = 0; i < m; ++i) {
-        for (int j = 0; j < n; ++j) {
-            if (field[i][j] == 1) {
-                impossible = true;
-            }
-            maxTime = max(maxTime, time[i][j]);
-        }
-    }
-
-    if (impossible) cout << -1 << endl;
-    else cout << maxTime << endl;
+    cout << endl;
 
     return 0;
 }
